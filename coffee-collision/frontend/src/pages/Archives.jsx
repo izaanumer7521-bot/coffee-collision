@@ -20,7 +20,7 @@ export default function Archives() {
           <li key={o._id}>
             <div>
               <strong>{o.productName}</strong>
-              <span>{o.size}, {o.milk} milk, sweetness {o.sweetness}/5{o.notes ? ` — ${o.notes}` : ''}</span>
+              <span>{o.size}, {o.milk} milk{o.flavour ? `, ${o.flavour}` : ''}, sweetness {o.sweetness}/5{o.notes ? ` — ${o.notes}` : ''}</span>
               <small>{new Date(o.createdAt).toLocaleString()}</small>
             </div>
             <div className="right"><b>${o.total.toFixed(2)}</b><em className={`status ${o.status}`}>{o.status}</em></div>

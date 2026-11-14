@@ -16,4 +16,4 @@ Add New -> Project -> import the repo.
 - Environment Variables: `MONGO_URI`, `JWT_SECRET`   (do NOT set VITE_API_URL, same address is used)
 Deploy. The site is at your Vercel link, the API at `<link>/api/health`.
 
-Seed the database once from your PC with your Atlas link in backend/.env: `npm run seed`
+No seeding needed: on a new database the admin account is created automatically from ADMIN_EMAIL and ADMIN_PASSWORD (set them in Vercel). Change the password in Admin -> Settings after the first sign in.

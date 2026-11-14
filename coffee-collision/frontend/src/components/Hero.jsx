@@ -34,8 +34,8 @@ export default function Hero() {
     ctx.globalCompositeOperation = 'source-over';
     ctx.clearRect(0, 0, cw, ch);
 
-    // cup size: ~85% of hero height on desktop, never wider than the screen on phones
-    const scale = Math.min((0.88 * ch) / img.naturalHeight, (1.6 * cw) / img.naturalWidth);
+    // cup size: ~70% of the hero height on desktop, never wider than the screen on phones
+    const scale = Math.min((0.7 * ch) / img.naturalHeight, (1.6 * cw) / img.naturalWidth);
     const w = img.naturalWidth * scale;
     const h = img.naturalHeight * scale;
     // glass sits at ~48% of the frame width; put that point at 60% of the screen (cup right of centre)
@@ -43,19 +43,9 @@ export default function Hero() {
     const mobile = cw < 700 * dpr;
     const targetX = mobile ? 0.5 * cw : 0.6 * cw;
     const x = targetX - 0.48 * w;
-    const y = (mobile ? 0.5 : 0.56) * ch - h / 2;
+    const y = (mobile ? 0.52 : 0.67) * ch - h / 2;
     ctx.drawImage(img, x, y, w, h);
 
-    // keep only the glass (+ a little splash room) so the big title shows around it, behind the cup
-    ctx.globalCompositeOperation = 'destination-in';
-    const g = ctx.createLinearGradient(x, 0, x + w, 0);
-    g.addColorStop(0.1, 'rgba(0,0,0,0)');
-    g.addColorStop(0.19, 'rgba(0,0,0,1)');
-    g.addColorStop(0.77, 'rgba(0,0,0,1)');
-    g.addColorStop(0.92, 'rgba(0,0,0,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, cw, ch);
-    ctx.globalCompositeOperation = 'source-over';
   };
 
   // scroll -> frame

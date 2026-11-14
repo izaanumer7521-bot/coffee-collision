@@ -9,7 +9,16 @@ import Contact from './pages/Contact.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import CreateCup from './pages/CreateCup.jsx';
-import Admin from './pages/Admin.jsx';
+import AdminLayout from './admin/AdminLayout.jsx';
+import Dashboard from './admin/Dashboard.jsx';
+import Products from './admin/Products.jsx';
+import Categories from './admin/Categories.jsx';
+import Flavours from './admin/Flavours.jsx';
+import Orders from './admin/Orders.jsx';
+import Activity from './admin/Activity.jsx';
+import Messages from './admin/Messages.jsx';
+import Settings from './admin/Settings.jsx';
+import { ScrollProgress } from './hooks/useReveal.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 
 function ScrollTop() {
@@ -27,10 +36,13 @@ function Private({ children, admin }) {
 }
 
 export default function App() {
+  const { pathname } = useLocation();
+  const inAdmin = pathname.startsWith('/admin');
   return (
     <>
       <ScrollTop />
-      <Navbar />
+      {!inAdmin && <ScrollProgress />}
+      {!inAdmin && <Navbar />}
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -40,11 +52,20 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create" element={<Private><CreateCup /></Private>} />
-          <Route path="/admin" element={<Private admin><Admin /></Private>} />
+          <Route path="/admin" element={<Private admin><AdminLayout /></Private>}>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<Products />} />
+            <Route path="categories" element={<Categories />} />
+            <Route path="flavours" element={<Flavours />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="activity" element={<Activity />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
           <Route path="*" element={<p className="page-note">Page not found.</p>} />
         </Routes>
       </main>
-      <Footer />
+      {!inAdmin && <Footer />}
     </>
   );
 }

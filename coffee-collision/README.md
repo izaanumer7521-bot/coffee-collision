@@ -3,18 +3,16 @@
 Full-stack coffee shop site: React (Vite) frontend + Express/MongoDB backend.
 
 ## Features
-- Scroll-driven hero: a canvas plays an image sequence as you scroll (big "Evara" title behind the cup)
-- Menu and "Pick your poison" cards loaded from the API, with search from the navbar
-- Sign up / sign in (JWT), "Create your cup" custom orders (size, milk, sweetness, notes)
-- Archives page: each user's past cups
-- Contact form saved to the database
-- Admin panel: manage orders (status), products (add / hide / delete), contact messages
+- Scroll-driven hero: the cup animation plays as you scroll, with the big "EVARA" title behind it
+- Home page: category filter, product cards that animate in as you scroll, new-product badge and live refresh (new drinks slide in), flavours strip, how-it-works section
+- Accounts (JWT), "Create your cup" orders with flavour, size, milk, sweetness; Archives page for past cups
+- Admin panel at /admin: dashboard with charts, products (picture upload, category, flavours), categories, flavours, orders, activity log, messages, settings (change email and password)
 
 ## Run it
 0. Copy `backend/.env.example` to `backend/.env` and put your own MongoDB link in it (the zip does not include a `.env` so it never overwrites yours).
 1. Install MongoDB locally (or use Atlas and put its URI in `backend/.env`).
 2. `npm run install:all`
-3. `npm run seed` (creates 3 drinks + admin user)
+3. Nothing to seed: the first time the server connects to an empty database it creates the admin account (from `ADMIN_EMAIL` / `ADMIN_PASSWORD`) and a few starter drinks. A database that already has an admin is never touched.
 4. `npm run dev`
    - Site: http://localhost:5173
    - API: http://localhost:5000

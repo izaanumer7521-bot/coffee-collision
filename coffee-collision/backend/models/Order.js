@@ -5,6 +5,8 @@ module.exports = mongoose.model('Order', new mongoose.Schema({
   productName: String,
   size: { type: String, enum: ['small', 'medium', 'large'], default: 'medium' },
   milk: { type: String, default: 'whole' },
+  flavour: { type: String, default: '' },
+  flavourPrice: { type: Number, default: 0 },
   sweetness: { type: Number, min: 0, max: 5, default: 2 },
   notes: { type: String, default: '' },
   total: { type: Number, required: true },

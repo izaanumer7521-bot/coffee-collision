@@ -20,7 +20,7 @@ app.use((req, res, next) =>
     },
   })(req, res, next)
 );
-app.use(express.json());
+app.use(express.json({ limit: '4mb' })); // product pictures are uploaded as compressed data URLs
 
 // connect to MongoDB before handling any request (works locally and on Vercel)
 app.use(async (req, res, next) => {
@@ -32,7 +32,11 @@ app.get('/', (req, res) => res.json({ ok: true, name: 'Evara API' }));
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/products', require('./routes/products'));
+app.use('/api/categories', require('./routes/categories'));
+app.use('/api/flavours', require('./routes/flavours'));
 app.use('/api/orders', require('./routes/orders'));
+app.use('/api/activity', require('./routes/activity'));
+app.use('/api/stats', require('./routes/stats'));
 app.use('/api/contact', require('./routes/contact'));
 app.use((req, res) => res.status(404).json({ message: 'Route not found.' }));
 
