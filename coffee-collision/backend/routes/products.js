@@ -14,7 +14,13 @@ function fields(b) {
   const f = {};
   if (b.name !== undefined) f.name = String(b.name).trim();
   if (b.description !== undefined) f.description = b.description;
-  if (b.price !== undefined) f.price = Number(b.price);
+  if (Array.isArray(b.sizes)) {
+    f.sizes = b.sizes
+      .map((s) => ({ name: String(s.name || '').trim(), price: Number(s.price) }))
+      .filter((s) => s.name && s.price >= 0);
+  }
+  if (f.sizes && f.sizes.length) f.price = Math.min(...f.sizes.map((s) => s.price));   // starting price comes from the sizes
+  else if (b.price !== undefined) f.price = Number(b.price);
   if (b.featured !== undefined) f.featured = !!b.featured;
   if (b.available !== undefined) f.available = !!b.available;
   if (b.category !== undefined) f.category = b.category && isId(b.category) ? b.category : null;

@@ -13,6 +13,7 @@ import AdminLayout from './admin/AdminLayout.jsx';
 import Dashboard from './admin/Dashboard.jsx';
 import Products from './admin/Products.jsx';
 import Categories from './admin/Categories.jsx';
+import ImportMenu from './admin/ImportMenu.jsx';
 import Flavours from './admin/Flavours.jsx';
 import Orders from './admin/Orders.jsx';
 import Activity from './admin/Activity.jsx';
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/admin" element={<Private admin><AdminLayout /></Private>}>
             <Route index element={<Dashboard />} />
             <Route path="products" element={<Products />} />
+            <Route path="import" element={<ImportMenu />} />
             <Route path="categories" element={<Categories />} />
             <Route path="flavours" element={<Flavours />} />
             <Route path="orders" element={<Orders />} />

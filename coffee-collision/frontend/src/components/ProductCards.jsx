@@ -18,6 +18,7 @@ export default function ProductCards({ products, fresh = new Set() }) {
           <div className="card-body">
             <h3>{p.name}</h3>
             <p>{p.description}</p>
+            {p.sizes?.length > 1 && <p className="sizes-line">{p.sizes.map((s) => s.name).join(' · ')}</p>}
             {p.flavours?.length > 0 && (
               <div className="dots" aria-label="Available flavours">
                 {p.flavours.filter((f) => f.available !== false).slice(0, 6).map((f) => (
@@ -26,7 +27,7 @@ export default function ProductCards({ products, fresh = new Set() }) {
               </div>
             )}
             <div className="card-foot">
-              <span className="price">{money(p.price)}</span>
+              <span className="price">{p.sizes?.length > 1 ? 'From ' : ''}{money(p.price)}</span>
               <Link to={`/create?drink=${p.slug}`}>Create your cup →</Link>
             </div>
           </div>

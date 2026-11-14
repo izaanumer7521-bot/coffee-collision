@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, money } from '../api.js';
+import { sizeOptions } from '../sizes.js';
 import { useAuth } from '../context/AuthContext.jsx';
-
-const SIZE_ADD = { small: 0, medium: 0.5, large: 1 };
 
 export default function CreateCup() {
   const { token } = useAuth();
@@ -11,7 +10,7 @@ export default function CreateCup() {
   const [params] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [allFlavours, setAllFlavours] = useState([]);
-  const [form, setForm] = useState({ productId: '', flavourId: '', size: 'medium', milk: 'whole', sweetness: 2, notes: '' });
+  const [form, setForm] = useState({ productId: '', flavourId: '', size: '', milk: 'whole', sweetness: 2, notes: '' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -28,15 +27,17 @@ export default function CreateCup() {
   const ids = new Set((product?.flavours || []).map((f) => f._id));
   const flavours = allFlavours.filter((f) => ids.size === 0 || ids.has(f._id));
   const flavour = flavours.find((f) => f._id === form.flavourId);
-  const total = product ? product.price + SIZE_ADD[form.size] + (flavour ? flavour.extraPrice : 0) : 0;
+  const sizes = product ? sizeOptions(product) : [];
+  const chosen = sizes.find((s) => s.name === form.size) || sizes[Math.floor((sizes.length - 1) / 2)];
+  const total = chosen ? chosen.price + (flavour ? flavour.extraPrice : 0) : 0;
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
-  const pickDrink = (e) => setForm({ ...form, productId: e.target.value, flavourId: '' });
+  const pickDrink = (e) => setForm({ ...form, productId: e.target.value, flavourId: '', size: '' });
 
   const submit = async (e) => {
     e.preventDefault();
     setBusy(true); setError('');
     try {
-      await api('/orders', { method: 'POST', token, body: { ...form, flavourId: form.flavourId || undefined, sweetness: Number(form.sweetness) } });
+      await api('/orders', { method: 'POST', token, body: { ...form, size: chosen?.name, flavourId: form.flavourId || undefined, sweetness: Number(form.sweetness) } });
       nav('/archives');
     } catch (err) { setError(err.message); setBusy(false); }
   };
@@ -59,8 +60,8 @@ export default function CreateCup() {
           </label>
         )}
         <label>Size
-          <select value={form.size} onChange={set('size')}>
-            <option value="small">Small</option><option value="medium">Medium (+$0.50)</option><option value="large">Large (+$1.00)</option>
+          <select value={chosen?.name || ''} onChange={set('size')}>
+            {sizes.map((s) => <option key={s.name} value={s.name}>{s.name} · {money(s.price)}</option>)}
           </select>
         </label>
         <label>Milk

@@ -3,7 +3,8 @@ module.exports = mongoose.model('Order', new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
   productName: String,
-  size: { type: String, enum: ['small', 'medium', 'large'], default: 'medium' },
+  size: { type: String, default: '' },          // size name chosen by the customer
+  sizePrice: { type: Number, default: 0 },
   milk: { type: String, default: 'whole' },
   flavour: { type: String, default: '' },
   flavourPrice: { type: Number, default: 0 },

@@ -7,6 +7,7 @@ import './admin.css';
 const NAV = [
   ['/admin', 'Dashboard', 'grid', true],
   ['/admin/products', 'Products', 'cup'],
+  ['/admin/import', 'Import menu', 'upload'],
   ['/admin/categories', 'Categories', 'tag'],
   ['/admin/flavours', 'Flavours', 'drop'],
   ['/admin/orders', 'Orders', 'bag'],

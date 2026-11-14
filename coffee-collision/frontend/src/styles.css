@@ -194,3 +194,4 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .marquee div { animation: none; }
   .card.fresh { animation: none; }
 }
+.sizes-line { font-size: 11px !important; letter-spacing: 0.08em; text-transform: uppercase; color: var(--caramel); opacity: 1 !important; }

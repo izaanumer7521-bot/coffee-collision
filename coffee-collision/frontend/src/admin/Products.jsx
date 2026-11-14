@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api, assetUrl, compressImage, money } from '../api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Card, ConfirmModal, Empty, Icon, Modal, PageHead, Toggle, useToast } from './ui.jsx';
@@ -12,6 +13,9 @@ function ProductForm({ product, categories, flavours, onSaved, onClose }) {
     category: product?.category?._id || '', flavours: (product?.flavours || []).map((x) => x._id),
     featured: !!product?.featured, available: product ? product.available : true,
   });
+  const [sizes, setSizes] = useState((product?.sizes || []).map((s) => ({ name: s.name, price: String(s.price) })));
+  const setSize = (i, k, v) => setSizes((l) => l.map((s, j) => (j === i ? { ...s, [k]: v } : s)));
+  const addSize = (name = '') => setSizes((l) => [...l, { name, price: '' }]);
   const [preview, setPreview] = useState(product?.image ? assetUrl(product.image) : '');
   const [imgData, setImgData] = useState(null);
   const [removed, setRemoved] = useState(false);
@@ -32,7 +36,8 @@ function ProductForm({ product, categories, flavours, onSaved, onClose }) {
     e.preventDefault();
     setBusy(true); setError('');
     try {
-      const body = { ...f, price: Number(f.price), category: f.category || null };
+      const cleanSizes = sizes.filter((s) => s.name.trim() && s.price !== '').map((s) => ({ name: s.name.trim(), price: Number(s.price) }));
+      const body = { ...f, price: Number(f.price), category: f.category || null, sizes: cleanSizes };
       if (imgData) body.imageData = imgData;
       else if (removed) body.removeImage = true;
       else if (link && link !== product?.image) body.image = link;
@@ -66,7 +71,9 @@ function ProductForm({ product, categories, flavours, onSaved, onClose }) {
           <div className="a-fields">
             <label className="a-field"><span>Name</span><input className="a-input" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} required autoFocus /></label>
             <div className="a-two">
-              <label className="a-field"><span>Price ($)</span><input className="a-input" type="number" step="0.01" min="0" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} required /></label>
+              {sizes.length === 0
+                ? <label className="a-field"><span>Price ($)</span><input className="a-input" type="number" step="0.01" min="0" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} required /></label>
+                : <div className="a-field"><span>Starting price</span><div className="a-input static">{money(Math.min(...sizes.map((s) => Number(s.price) || 0)))}</div></div>}
               <label className="a-field"><span>Category</span>
                 <select className="a-input" value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })}>
                   <option value="">No category</option>
@@ -75,6 +82,23 @@ function ProductForm({ product, categories, flavours, onSaved, onClose }) {
               </label>
             </div>
             <label className="a-field"><span>Description</span><textarea className="a-input" rows="3" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></label>
+            <div className="a-field">
+              <span>Sizes &amp; prices</span>
+              {sizes.map((s, i) => (
+                <div className="a-size-row" key={i}>
+                  <input className="a-input" placeholder="Size name (e.g. Large, 16oz)" value={s.name} onChange={(e) => setSize(i, 'name', e.target.value)} />
+                  <input className="a-input" type="number" step="0.01" min="0" placeholder="Price" value={s.price} onChange={(e) => setSize(i, 'price', e.target.value)} />
+                  <button type="button" className="a-icon danger" aria-label="Remove size" onClick={() => setSizes((l) => l.filter((_, j) => j !== i))}><Icon name="x" size={16} /></button>
+                </div>
+              ))}
+              <div className="a-chips wrap tight">
+                {['Small', 'Medium', 'Large'].filter((n) => !sizes.some((s) => s.name.toLowerCase() === n.toLowerCase())).map((n) => (
+                  <button type="button" key={n} onClick={() => addSize(n)}><Icon name="plus" size={13} />{n}</button>
+                ))}
+                <button type="button" onClick={() => addSize('')}><Icon name="plus" size={13} />Custom size</button>
+              </div>
+              <small className="a-muted">{sizes.length ? 'The customer picks one of these sizes. The lowest price is shown as “From”.' : 'No sizes: the drink has one price. Add sizes to give each size its own price.'}</small>
+            </div>
             <div className="a-field">
               <span>Flavours available for this drink</span>
               {flavours.length === 0 ? <small className="a-muted">Add flavours first in the Flavours page.</small> : (
@@ -138,8 +162,11 @@ export default function Products() {
 
   return (
     <div className="a-stack">
-      <PageHead title="Products" sub="Add drinks, set prices, pictures, categories and flavours." action={
-        <button className="a-btn" onClick={() => setEditing({})}><Icon name="plus" size={16} />Add product</button>
+      <PageHead title="Products" sub="Add drinks, set prices, sizes, pictures, categories and flavours." action={
+        <div className="a-head-actions">
+          <Link className="a-btn ghost" to="/admin/import"><Icon name="upload" size={16} />Import menu</Link>
+          <button className="a-btn" onClick={() => setEditing({})}><Icon name="plus" size={16} />Add product</button>
+        </div>
       } />
       <Card>
         <div className="a-toolbar">
@@ -166,7 +193,7 @@ export default function Products() {
                 </div>
                 <div className="a-product-body">
                   <b>{p.name}</b>
-                  <small>{p.category?.name || 'No category'} · {money(p.price)}</small>
+                  <small>{p.category?.name || 'No category'} · {p.sizes?.length > 1 ? 'from ' : ''}{money(p.price)}</small>
                   <div className="a-dots">{p.flavours?.map((fl) => <i key={fl._id} title={fl.name} style={{ background: fl.color }} />)}</div>
                 </div>
                 <div className="a-product-actions">

@@ -4,6 +4,7 @@ export const ENTITY_ICON = { product: 'cup', category: 'tag', flavour: 'drop', o
 // one readable sentence for each activity entry
 export function describe(a) {
   const who = a.actorName || 'System';
+  if (a.action === 'import') return `${who} imported a menu`;
   const name = a.entityName ? `“${a.entityName}”` : '';
   if (a.entity === 'account') {
     if (a.action === 'signed-in') return `${who} signed in`;

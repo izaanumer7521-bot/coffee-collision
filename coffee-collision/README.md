@@ -6,6 +6,7 @@ Full-stack coffee shop site: React (Vite) frontend + Express/MongoDB backend.
 - Scroll-driven hero: the cup animation plays as you scroll, with the big "EVARA" title behind it
 - Home page: category filter, product cards that animate in as you scroll, new-product badge and live refresh (new drinks slide in), flavours strip, how-it-works section
 - Accounts (JWT), "Create your cup" orders with flavour, size, milk, sweetness; Archives page for past cups
+- Menu import (Admin -> Import menu): type your menu under `# Category` headings with sizes, prices and flavours; preview, then import
 - Admin panel at /admin: dashboard with charts, products (picture upload, category, flavours), categories, flavours, orders, activity log, messages, settings (change email and password)
 
 ## Run it
