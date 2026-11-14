@@ -1,25 +1,19 @@
-# Deploy: GitHub + Vercel
+# Deploy on Vercel (ONE project: website + API together)
 
-## 1. MongoDB Atlas (free database; localhost will not work online)
-1. Create a free cluster at mongodb.com/atlas, then Database Access -> add a user and password.
-2. Network Access -> Add IP Address -> Allow access from anywhere (0.0.0.0/0).
-3. Connect -> Drivers -> copy the connection string, e.g.
-   `mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/evara`
-4. Seed it once from your PC: put that string as MONGO_URI in `backend/.env`, then run `npm run seed`.
+## 1. MongoDB Atlas
+Use your Atlas connection string (Network Access must allow 0.0.0.0/0).
 
-## 2. Push to GitHub (VS Code terminal, inside the evara folder)
-Create an empty repo on github.com (New repository, no README), then:
-
-    git init
+## 2. Push to GitHub
     git add .
-    git commit -m "Evara MERN app"
-    git branch -M main
-    git remote add origin https://github.com/YOUR_USERNAME/evara.git
-    git push -u origin main
+    git commit -m "update"
+    git push
 
-## 3. Vercel: two projects from the same repo
-Backend: Add New Project -> import the repo -> Root Directory `backend`.
-  Environment variables: MONGO_URI, JWT_SECRET (any long random text), CLIENT_URL (frontend URL, add after step 2 below).
-Frontend: Add New Project -> same repo -> Root Directory `frontend` (Framework: Vite).
-  Environment variable: VITE_API_URL = the backend URL from Vercel.
-Then go back to the backend project, set CLIENT_URL to the frontend URL, and redeploy it.
+## 3. One Vercel project
+Add New -> Project -> import the repo.
+- Root Directory: the folder that contains `frontend`, `backend`, `api` and `vercel.json` (repo root)
+- Framework Preset: Other
+- Leave Build / Output / Install commands as they are (vercel.json sets them)
+- Environment Variables: `MONGO_URI`, `JWT_SECRET`   (do NOT set VITE_API_URL, same address is used)
+Deploy. The site is at your Vercel link, the API at `<link>/api/health`.
+
+Seed the database once from your PC with your Atlas link in backend/.env: `npm run seed`

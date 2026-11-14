@@ -9,7 +9,17 @@ const app = express();
 
 // CLIENT_URL can hold several origins separated by commas.
 const origins = (process.env.CLIENT_URL || 'http://localhost:5173').split(',').map((s) => s.trim().replace(/\/$/, ''));
-app.use(cors({ origin: (origin, cb) => (!origin || origins.includes(origin) ? cb(null, true) : cb(new Error('Not allowed by CORS'))) }));
+// Allowed browser origins: the same address the API is served from (single Vercel project),
+// plus anything listed in CLIENT_URL (comma separated), e.g. http://localhost:5173 in development.
+app.use((req, res, next) =>
+  cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      try { if (new URL(origin).host === req.headers.host) return cb(null, true); } catch {}
+      cb(null, origins.includes(origin.replace(/\/$/, '')));
+    },
+  })(req, res, next)
+);
 app.use(express.json());
 
 // connect to MongoDB before handling any request (works locally and on Vercel)
