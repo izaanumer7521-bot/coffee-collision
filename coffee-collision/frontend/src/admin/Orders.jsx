@@ -50,7 +50,8 @@ export default function Orders() {
               <li key={o._id}>
                 <div className="grow">
                   <b>{o.productName} <span className="a-muted">· {money(o.total)}</span></b>
-                  <small>{o.size}, {o.milk} milk{o.flavour ? `, ${o.flavour}` : ''}, sweetness {o.sweetness}/5{o.notes ? ` — ${o.notes}` : ''}</small>
+                  <small>{o.quantity > 1 ? `${o.quantity} × ` : ''}{o.size}{o.milk ? `, ${o.milk} milk` : ''}{o.flavour ? `, ${o.flavour}` : ''}{o.sweetness != null ? `, sweetness ${o.sweetness}/5` : ''}</small>
+                  {o.notes && <small style={{ display: 'block', marginTop: 4, color: '#b4541c', fontWeight: 600 }}>Request: {o.notes}</small>}
                   <small>{o.user?.name || 'Customer'} ({o.user?.email}) · {timeAgo(o.createdAt)}</small>
                 </div>
                 <select className={`a-input slim a-status ${o.status}`} value={o.status} onChange={(e) => change(o, e.target.value)} aria-label="Order status">

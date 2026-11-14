@@ -24,7 +24,7 @@ export default function ProductCards({ products, fresh = new Set(), hideCategory
               </div>
             )}
             <div className="card-body">
-              <h3>{tr(p)}</h3>
+              <h3><Link className="card-link" to={`/menu/${p.slug}`}>{tr(p)}</Link></h3>
               {tr(p, 'description') && <p>{tr(p, 'description')}</p>}
               {multi && <p className="sizes-line">{p.sizes.map((s) => tr(s)).join(' · ')}</p>}
               {p.flavours?.length > 0 && (
@@ -36,7 +36,7 @@ export default function ProductCards({ products, fresh = new Set(), hideCategory
               )}
               <div className="card-foot">
                 <span className="price">{hasPrice ? `${multi ? `${t('from')} ` : ''}${money(p.price)}` : t('priceInStore')}</span>
-                {hasPrice && <Link to={`/create?drink=${p.slug}`}>{t('orderThis')}</Link>}
+                <span className="view">{t('view')}</span>
               </div>
             </div>
           </Reveal>

@@ -1,14 +1,14 @@
 const router = require('express').Router();
 const Order = require('../models/Order');
 const Product = require('../models/Product');
-const Flavour = require('../models/Flavour');
 const sizeOptions = require('../utils/sizes');
 const log = require('../utils/activity');
 const { protect, adminOnly } = require('../middleware/auth');
 
 router.post('/', protect, async (req, res) => {
   try {
-    const { productId, flavourId, size, milk = 'whole', sweetness = 2, notes = '' } = req.body;
+    const { productId, size, notes = '' } = req.body;
+    const quantity = Math.min(20, Math.max(1, parseInt(req.body.quantity, 10) || 1));
     const product = await Product.findById(productId);
     if (!product || !product.available) return res.status(404).json({ message: 'That drink is not available.' });
 
@@ -18,19 +18,13 @@ router.post('/', protect, async (req, res) => {
     const options = sizeOptions(product);
     const chosen = options.find((s) => s.name.toLowerCase() === String(size || '').toLowerCase()) || options[Math.floor((options.length - 1) / 2)];
 
-    let flavour = null;
-    if (flavourId) {
-      flavour = await Flavour.findById(flavourId);
-      if (!flavour || !flavour.available) return res.status(404).json({ message: 'That flavour is not available.' });
-    }
-    const flavourPrice = flavour ? flavour.extraPrice : 0;
-    const total = +(chosen.price + flavourPrice).toFixed(2);
+    const total = +(chosen.price * quantity).toFixed(2);
     const order = await Order.create({
       user: req.user._id, product: product._id, productName: product.name,
-      flavour: flavour ? flavour.name : '', flavourPrice, size: chosen.name, sizePrice: chosen.price,
-      milk, sweetness, notes, total,
+      size: chosen.name, sizePrice: chosen.price, quantity,
+      notes: String(notes).trim().slice(0, 500), total,
     });
-    log(req.user, 'created', 'order', product.name, `${total} SAR · ${chosen.name}${flavour ? ` · ${flavour.name}` : ''}`);
+    log(req.user, 'created', 'order', product.name, `${quantity} × ${chosen.name} · ${total} SAR`);
     res.status(201).json(order);
   } catch (e) { res.status(400).json({ message: e.message }); }
 });

@@ -95,7 +95,7 @@ export default function Hero() {
           <p className="hero-kicker">{t('heroKicker')}</p>
           <p className="hero-quote">{t('heroQuote')}</p>
           <p className="hero-sub">{t('heroSub')}</p>
-          <Link to="/create" className="btn">{t('createCupCta')}</Link>
+          <Link to="/menu" className="btn">{t('heroCta')}</Link>
         </div>
         {loaded < FRAME_COUNT && <div className="hero-loading">{t('loading')} {Math.round((loaded / FRAME_COUNT) * 100)}%</div>}
       </div>

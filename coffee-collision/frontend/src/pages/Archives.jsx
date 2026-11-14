@@ -16,13 +16,14 @@ export default function Archives() {
       <h1>{t('archivesTitle')}</h1>
       <p className="page-note">{t('archivesNote')}</p>
       {error && <p className="form-error">{error}</p>}
-      {orders && orders.length === 0 && <p>{t('noCups')} <Link to="/create">{t('firstCup')}</Link></p>}
+      {orders && orders.length === 0 && <p>{t('noOrders')} <Link to="/menu">{t('startOrder')}</Link></p>}
       <ul className="list">
         {orders?.map((o) => (
           <li key={o._id}>
             <div>
               <strong>{o.productName}</strong>
-              <span>{o.size}, {t(`milk_${o.milk}`)}{o.flavour ? `, ${o.flavour}` : ''}, {t('sweetness')} {o.sweetness}/5{o.notes ? ` — ${o.notes}` : ''}</span>
+              <span>{o.quantity > 1 ? `${o.quantity} × ` : ''}{o.size}</span>
+              {o.notes && <span className="order-request"><b>{t('yourRequest')}:</b> {o.notes}</span>}
               <small>{new Date(o.createdAt).toLocaleString(lang === 'ar' ? 'ar-SA' : undefined)}</small>
             </div>
             <div className="right"><b>{money(o.total)}</b><em className={`status ${o.status}`}>{t(o.status)}</em></div>

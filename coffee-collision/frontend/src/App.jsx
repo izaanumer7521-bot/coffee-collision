@@ -8,7 +8,7 @@ import Archives from './pages/Archives.jsx';
 import Contact from './pages/Contact.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
-import CreateCup from './pages/CreateCup.jsx';
+import Product from './pages/Product.jsx';
 import AdminLayout from './admin/AdminLayout.jsx';
 import Dashboard from './admin/Dashboard.jsx';
 import Products from './admin/Products.jsx';
@@ -55,7 +55,8 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/create" element={<Private><CreateCup /></Private>} />
+          <Route path="/menu/:slug" element={<Product />} />
+          <Route path="/create" element={<Navigate to="/menu" replace />} />
           <Route path="/admin" element={<Private admin><AdminLayout /></Private>}>
             <Route index element={<Dashboard />} />
             <Route path="products" element={<Products />} />

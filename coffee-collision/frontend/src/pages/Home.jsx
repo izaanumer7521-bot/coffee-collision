@@ -14,7 +14,6 @@ export default function Home() {
   const { t, tr } = useLang();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [flavours, setFlavours] = useState([]);
   const [cat, setCat] = useState('all');
   const [error, setError] = useState('');
   const [fresh, setFresh] = useState(() => new Set());
@@ -22,14 +21,14 @@ export default function Home() {
 
   const load = useCallback(async () => {
     try {
-      const [p, c, f] = await Promise.all([api('/products'), api('/categories'), api('/flavours')]);
+      const [p, c] = await Promise.all([api('/products'), api('/categories')]);
       if (known.current) {
         // drinks the admin added while this page was open slide in with a highlight
         const added = p.filter((x) => !known.current.has(x._id)).map((x) => x._id);
         if (added.length) setFresh((prev) => new Set([...prev, ...added]));
       }
       known.current = new Set(p.map((x) => x._id));
-      setProducts(p); setCategories(c); setFlavours(f); setError('');
+      setProducts(p); setCategories(c); setError('');
     } catch (e) { if (!known.current) setError(e.message); }
   }, []);
 
@@ -68,21 +67,6 @@ export default function Home() {
           </>
         )}
       </section>
-
-      {flavours.length > 0 && (
-        <section className="flavours">
-          <Reveal><h2>{t('flavoursTitle')}</h2></Reveal>
-          <Reveal delay={80}><p className="lead">{t('flavoursLead')}</p></Reveal>
-          <div className="flavour-pills">
-            {flavours.map((f, i) => (
-              <Reveal as="span" key={f._id} delay={i * 70} className="flavour-pill">
-                <i style={{ background: f.color }} />{tr(f)}
-                {f.extraPrice > 0 && <small>+{money(f.extraPrice)}</small>}
-              </Reveal>
-            ))}
-          </div>
-        </section>
-      )}
 
       <section className="steps">
         {STEPS.map(([n, key], i) => (
