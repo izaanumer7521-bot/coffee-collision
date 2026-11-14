@@ -9,11 +9,11 @@ function ProductForm({ product, categories, flavours, onSaved, onClose }) {
   const toast = useToast();
   const isUploaded = (product?.image || '').startsWith('/api/products/');
   const [f, setF] = useState({
-    name: product?.name || '', price: product?.price ?? '', description: product?.description || '',
+    name: product?.name || '', nameAr: product?.nameAr || '', descriptionAr: product?.descriptionAr || '', price: product?.price ?? '', description: product?.description || '',
     category: product?.category?._id || '', flavours: (product?.flavours || []).map((x) => x._id),
     featured: !!product?.featured, available: product ? product.available : true,
   });
-  const [sizes, setSizes] = useState((product?.sizes || []).map((s) => ({ name: s.name, price: String(s.price) })));
+  const [sizes, setSizes] = useState((product?.sizes || []).map((s) => ({ name: s.name, nameAr: s.nameAr || '', price: String(s.price) })));
   const setSize = (i, k, v) => setSizes((l) => l.map((s, j) => (j === i ? { ...s, [k]: v } : s)));
   const addSize = (name = '') => setSizes((l) => [...l, { name, price: '' }]);
   const [preview, setPreview] = useState(product?.image ? assetUrl(product.image) : '');
@@ -36,7 +36,7 @@ function ProductForm({ product, categories, flavours, onSaved, onClose }) {
     e.preventDefault();
     setBusy(true); setError('');
     try {
-      const cleanSizes = sizes.filter((s) => s.name.trim() && s.price !== '').map((s) => ({ name: s.name.trim(), price: Number(s.price) }));
+      const cleanSizes = sizes.filter((s) => s.name.trim() && s.price !== '').map((s) => ({ name: s.name.trim(), nameAr: s.nameAr || '', price: Number(s.price) }));
       const body = { ...f, price: Number(f.price), category: f.category || null, sizes: cleanSizes };
       if (imgData) body.imageData = imgData;
       else if (removed) body.removeImage = true;
@@ -70,9 +70,10 @@ function ProductForm({ product, categories, flavours, onSaved, onClose }) {
           </div>
           <div className="a-fields">
             <label className="a-field"><span>Name</span><input className="a-input" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} required autoFocus /></label>
+            <label className="a-field"><span>Arabic name (الاسم بالعربية)</span><input className="a-input" dir="rtl" lang="ar" value={f.nameAr} onChange={(e) => setF({ ...f, nameAr: e.target.value })} /></label>
             <div className="a-two">
               {sizes.length === 0
-                ? <label className="a-field"><span>Price ($)</span><input className="a-input" type="number" step="0.01" min="0" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} required /></label>
+                ? <label className="a-field"><span>Price (SAR)</span><input className="a-input" type="number" step="0.01" min="0" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} required /></label>
                 : <div className="a-field"><span>Starting price</span><div className="a-input static">{money(Math.min(...sizes.map((s) => Number(s.price) || 0)))}</div></div>}
               <label className="a-field"><span>Category</span>
                 <select className="a-input" value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })}>
@@ -82,6 +83,7 @@ function ProductForm({ product, categories, flavours, onSaved, onClose }) {
               </label>
             </div>
             <label className="a-field"><span>Description</span><textarea className="a-input" rows="3" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></label>
+            <label className="a-field"><span>Arabic description (optional)</span><textarea className="a-input" dir="rtl" lang="ar" rows="2" value={f.descriptionAr} onChange={(e) => setF({ ...f, descriptionAr: e.target.value })} /></label>
             <div className="a-field">
               <span>Sizes &amp; prices</span>
               {sizes.map((s, i) => (
@@ -149,7 +151,7 @@ export default function Products() {
 
   const shown = useMemo(() => (products || []).filter((p) =>
     (cat === 'all' || (cat === 'none' ? !p.category : p.category?._id === cat)) &&
-    (!q || `${p.name} ${p.description}`.toLowerCase().includes(q.toLowerCase()))), [products, q, cat]);
+    (!q || `${p.name} ${p.nameAr || ''} ${p.description}`.toLowerCase().includes(q.toLowerCase()))), [products, q, cat]);
 
   const quick = async (p, patch) => {
     try { await api(`/products/${p._id}`, { method: 'PUT', token, body: patch }); load(); toast('Saved'); }
@@ -192,7 +194,7 @@ export default function Products() {
                   <span className={`a-pill ${p.available ? 'live' : 'hidden'}`}>{p.available ? 'Live' : 'Hidden'}</span>
                 </div>
                 <div className="a-product-body">
-                  <b>{p.name}</b>
+                  <b>{p.name}{p.nameAr ? <span lang="ar" dir="rtl" style={{ marginInlineStart: 8, opacity: 0.6, fontWeight: 400 }}>{p.nameAr}</span> : null}</b>
                   <small>{p.category?.name || 'No category'} · {p.sizes?.length > 1 ? 'from ' : ''}{money(p.price)}</small>
                   <div className="a-dots">{p.flavours?.map((fl) => <i key={fl._id} title={fl.name} style={{ background: fl.color }} />)}</div>
                 </div>

@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 module.exports = mongoose.model('Product', new mongoose.Schema({
   name: { type: String, required: true },
+  nameAr: { type: String, default: '' },                        // Arabic name
   slug: { type: String, required: true, unique: true },
   description: { type: String, default: '' },
+  descriptionAr: { type: String, default: '' },
   price: { type: Number, required: true, min: 0 },              // base / starting price (the lowest size when sizes exist)
-  sizes: [{ _id: false, name: { type: String, required: true, trim: true }, price: { type: Number, required: true, min: 0 } }],
+  sizes: [{ _id: false, name: { type: String, required: true, trim: true }, nameAr: { type: String, default: '' }, price: { type: Number, required: true, min: 0 } }],
   image: { type: String, default: '' },                         // URL shown on the site
   imageData: { type: String, select: false },                   // uploaded picture (data URL), served by /api/products/:id/image
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null },

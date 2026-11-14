@@ -2,16 +2,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Hero from '../components/Hero.jsx';
 import ProductCards from '../components/ProductCards.jsx';
 import CategoryChips from '../components/CategoryChips.jsx';
+import { Link } from 'react-router-dom';
 import { Reveal } from '../hooks/useReveal.jsx';
+import { useLang } from '../i18n/LangContext.jsx';
 import { api, money } from '../api.js';
 
-const STEPS = [
-  ['01', 'Pick your drink', 'Choose a classic or something new from the menu.'],
-  ['02', 'Create your cup', 'Set the size, milk, sweetness and add a flavour.'],
-  ['03', 'We brew it', 'Track your order and find every cup in your Archives.'],
-];
+const STEPS = [['01', 'step1'], ['02', 'step2'], ['03', 'step3']];
+const HOME_LIMIT = 6;   // the home page shows a taste of the menu; the Menu page has everything
 
 export default function Home() {
+  const { t, tr } = useLang();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [flavours, setFlavours] = useState([]);
@@ -41,7 +41,8 @@ export default function Home() {
     return () => { clearInterval(tick); document.removeEventListener('visibilitychange', onVis); };
   }, [load]);
 
-  const shown = cat === 'all' ? products : products.filter((p) => p.category?.slug === cat);
+  const inCat = cat === 'all' ? products : products.filter((p) => p.category?.slug === cat);
+  const shown = cat === 'all' ? inCat.slice(0, HOME_LIMIT) : inCat;
 
   return (
     <>
@@ -50,29 +51,32 @@ export default function Home() {
       <div className="marquee" aria-hidden="true">
         <div>
           {Array.from({ length: 2 }).map((_, k) => (
-            <span key={k}>Roasted coffee <b>✦</b> Cold milk <b>✦</b> Pure obsession <b>✦</b> Let flavor collide <b>✦</b> </span>
+            <span key={k}>{t('marquee').map((m) => <i key={m}>{m} <b>✦</b> </i>)}</span>
           ))}
         </div>
       </div>
 
       <section className="pick">
-        <Reveal><h2>Pick your poison</h2></Reveal>
+        <Reveal><h2>{t('pickTitle')}</h2></Reveal>
         {error ? <p className="form-error">{error}</p> : (
           <>
             <Reveal delay={80}><CategoryChips categories={categories} products={products} value={cat} onChange={setCat} /></Reveal>
             <ProductCards key={cat} products={shown} fresh={fresh} />
+            {cat === 'all' && inCat.length > HOME_LIMIT && (
+              <Reveal className="see-all"><Link className="btn dark" to="/menu">{t('seeFullMenu')}</Link></Reveal>
+            )}
           </>
         )}
       </section>
 
       {flavours.length > 0 && (
         <section className="flavours">
-          <Reveal><h2>Make it yours</h2></Reveal>
-          <Reveal delay={80}><p className="lead">Add a flavour to any drink when you create your cup.</p></Reveal>
+          <Reveal><h2>{t('flavoursTitle')}</h2></Reveal>
+          <Reveal delay={80}><p className="lead">{t('flavoursLead')}</p></Reveal>
           <div className="flavour-pills">
             {flavours.map((f, i) => (
               <Reveal as="span" key={f._id} delay={i * 70} className="flavour-pill">
-                <i style={{ background: f.color }} />{f.name}
+                <i style={{ background: f.color }} />{tr(f)}
                 {f.extraPrice > 0 && <small>+{money(f.extraPrice)}</small>}
               </Reveal>
             ))}
@@ -81,11 +85,11 @@ export default function Home() {
       )}
 
       <section className="steps">
-        {STEPS.map(([n, title, text], i) => (
+        {STEPS.map(([n, key], i) => (
           <Reveal key={n} delay={i * 110} className="step">
             <span>{n}</span>
-            <h3>{title}</h3>
-            <p>{text}</p>
+            <h3>{t(key)}</h3>
+            <p>{t(`${key}Text`)}</p>
           </Reveal>
         ))}
       </section>

@@ -31,3 +31,8 @@ Replace the drink photos in `frontend/public/products/` the same way.
 backend/  config, models (User, Product, Order, Message), middleware (JWT), routes, seed.js
 frontend/  src/components (Navbar, Hero, ProductCards, Footer), src/pages, src/context/AuthContext.jsx
 ```
+
+## English / Arabic and the full menu
+- The navbar has a language button (English ⇄ العربية). Arabic switches the whole site to right-to-left. Visitor text lives in `frontend/src/i18n/strings.js`.
+- Products, categories and flavours have an Arabic name (`nameAr`); edit them in Admin. Prices are in Saudi riyals (SAR).
+- Add the whole printed menu: Admin -> Import menu -> "Load the full menu", or run `npm run seed:menu` (add `-- --hide-demo` to hide the 3 starter drinks). Safe to run repeatedly. The menu data is in `backend/data/menu.js`.

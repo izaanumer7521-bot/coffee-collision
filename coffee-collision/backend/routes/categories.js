@@ -9,12 +9,12 @@ router.get('/', async (req, res) => res.json(await Category.find().sort('positio
 
 router.post('/', protect, adminOnly, async (req, res) => {
   try {
-    const { name, description = '' } = req.body;
+    const { name, nameAr = '', description = '' } = req.body;
     if (!name || !name.trim()) return res.status(400).json({ message: 'Category name is required.' });
     const slug = slugify(name);
     if (await Category.findOne({ slug })) return res.status(409).json({ message: 'That category already exists.' });
     const count = await Category.countDocuments();
-    const c = await Category.create({ name: name.trim(), slug, description, position: count });
+    const c = await Category.create({ name: name.trim(), nameAr: String(nameAr).trim(), slug, description, position: count });
     log(req.user, 'created', 'category', c.name);
     res.status(201).json(c);
   } catch (e) { res.status(400).json({ message: e.message }); }
@@ -24,6 +24,7 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
   try {
     const patch = {};
     if (req.body.name) { patch.name = req.body.name.trim(); patch.slug = slugify(req.body.name); }
+    if (req.body.nameAr !== undefined) patch.nameAr = String(req.body.nameAr).trim();
     if (req.body.description !== undefined) patch.description = req.body.description;
     const c = await Category.findByIdAndUpdate(req.params.id, patch, { new: true, runValidators: true });
     if (!c) return res.status(404).json({ message: 'Category not found.' });

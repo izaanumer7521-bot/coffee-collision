@@ -7,13 +7,14 @@ function CategoryForm({ category, onSaved, onClose }) {
   const { token } = useAuth();
   const toast = useToast();
   const [name, setName] = useState(category?.name || '');
+  const [nameAr, setNameAr] = useState(category?.nameAr || '');
   const [description, setDescription] = useState(category?.description || '');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const submit = async (e) => {
     e.preventDefault(); setBusy(true); setError('');
     try {
-      const body = { name, description };
+      const body = { name, nameAr, description };
       if (category) await api(`/categories/${category._id}`, { method: 'PUT', token, body });
       else await api('/categories', { method: 'POST', token, body });
       toast(category ? 'Category updated' : 'Category added'); onSaved();
@@ -23,6 +24,7 @@ function CategoryForm({ category, onSaved, onClose }) {
     <Modal title={category ? 'Edit category' : 'New category'} onClose={onClose}>
       <form className="a-form" onSubmit={submit}>
         <label className="a-field"><span>Name</span><input className="a-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Cold brew" required autoFocus /></label>
+        <label className="a-field"><span>Arabic name (الاسم بالعربية)</span><input className="a-input" dir="rtl" lang="ar" value={nameAr} onChange={(e) => setNameAr(e.target.value)} /></label>
         <label className="a-field"><span>Description (optional)</span><input className="a-input" value={description} onChange={(e) => setDescription(e.target.value)} /></label>
         {error && <p className="a-error">{error}</p>}
         <div className="a-actions">
@@ -72,7 +74,7 @@ export default function Categories() {
             {cats.map((c) => (
               <li key={c._id}>
                 <span className="a-ev-ico"><Icon name="tag" size={18} /></span>
-                <div className="grow"><b>{c.name}</b><small>{c.description || `${counts[c._id] || 0} products`}</small></div>
+                <div className="grow"><b>{c.name}{c.nameAr ? <span lang="ar" dir="rtl" style={{ marginInlineStart: 8, opacity: 0.6, fontWeight: 400 }}>{c.nameAr}</span> : null}</b><small>{c.description || `${counts[c._id] || 0} products`}</small></div>
                 <span className="a-count">{counts[c._id] || 0} products</span>
                 <button className="a-icon" aria-label={`Edit ${c.name}`} onClick={() => setEditing(c)}><Icon name="edit" /></button>
                 <button className="a-icon danger" aria-label={`Delete ${c.name}`} onClick={() => setDeleting(c)}><Icon name="trash" /></button>

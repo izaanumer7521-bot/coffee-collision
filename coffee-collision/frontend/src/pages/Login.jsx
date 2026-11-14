@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useLang } from '../i18n/LangContext.jsx';
 
 export default function Login() {
   const { login } = useAuth();
+  const { t } = useLang();
   const nav = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -14,13 +16,13 @@ export default function Login() {
   };
   return (
     <section className="page dark narrow">
-      <h1>Sign in</h1>
+      <h1>{t('signIn')}</h1>
       <form className="form" onSubmit={submit}>
-        <label>Email<input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></label>
-        <label>Password<input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></label>
+        <label>{t('email')}<input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></label>
+        <label>{t('password')}<input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required /></label>
         {error && <p className="form-error">{error}</p>}
-        <button className="btn" type="submit">Sign in</button>
-        <p className="alt">New here? <Link to="/register">Create an account</Link></p>
+        <button className="btn" type="submit">{t('signIn')}</button>
+        <p className="alt">{t('newHere')} <Link to="/register">{t('createAccount')}</Link></p>
       </form>
     </section>
   );

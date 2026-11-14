@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLang } from '../i18n/LangContext.jsx';
 
 // Put your frames in frontend/public/frames named frame_001.png ... frame_NNN.png
 // (.png, .jpg or .webp — change FRAME_EXT) and set FRAME_COUNT to how many you have.
@@ -8,6 +9,7 @@ const FRAME_EXT = 'webp';
 const frameSrc = (i) => `/frames/frame_${String(i + 1).padStart(3, '0')}.${FRAME_EXT}`;
 
 export default function Hero() {
+  const { t } = useLang();
   const wrapRef = useRef(null);
   const canvasRef = useRef(null);
   const framesRef = useRef([]);
@@ -90,12 +92,12 @@ export default function Hero() {
         </h1>
         <canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />
         <div className="hero-copy">
-          <p className="hero-kicker">Cold brew · Espresso</p>
-          <p className="hero-quote">“Let flavor collide.”</p>
-          <p className="hero-sub">Roasted coffee. Cold milk. Pure obsession.</p>
-          <Link to="/create" className="btn">Create your cup →</Link>
+          <p className="hero-kicker">{t('heroKicker')}</p>
+          <p className="hero-quote">{t('heroQuote')}</p>
+          <p className="hero-sub">{t('heroSub')}</p>
+          <Link to="/create" className="btn">{t('createCupCta')}</Link>
         </div>
-        {loaded < FRAME_COUNT && <div className="hero-loading">Loading {Math.round((loaded / FRAME_COUNT) * 100)}%</div>}
+        {loaded < FRAME_COUNT && <div className="hero-loading">{t('loading')} {Math.round((loaded / FRAME_COUNT) * 100)}%</div>}
       </div>
     </section>
   );

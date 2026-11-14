@@ -3,9 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, money } from '../api.js';
 import { sizeOptions } from '../sizes.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useLang } from '../i18n/LangContext.jsx';
 
 export default function CreateCup() {
   const { token } = useAuth();
+  const { t, tr } = useLang();
   const nav = useNavigate();
   const [params] = useSearchParams();
   const [products, setProducts] = useState([]);
@@ -15,7 +17,9 @@ export default function CreateCup() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    Promise.all([api('/products'), api('/flavours')]).then(([list, fl]) => {
+    Promise.all([api('/products'), api('/flavours')]).then(([all, fl]) => {
+      let list = all;
+      list = list.filter((p) => p.price > 0);   // items without a price are not orderable online
       setProducts(list); setAllFlavours(fl);
       const wanted = list.find((p) => p.slug === params.get('drink')) || list[0];
       if (wanted) setForm((f) => ({ ...f, productId: wanted._id }));
@@ -44,37 +48,37 @@ export default function CreateCup() {
 
   return (
     <section className="page dark narrow">
-      <h1>Create your cup</h1>
+      <h1>{t('createTitle')}</h1>
       <form className="form" onSubmit={submit}>
-        <label>Drink
+        <label>{t('drink')}
           <select value={form.productId} onChange={pickDrink}>
-            {products.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
+            {products.map((p) => <option key={p._id} value={p._id}>{tr(p)}</option>)}
           </select>
         </label>
         {flavours.length > 0 && (
-          <label>Flavour
+          <label>{t('flavour')}
             <select value={form.flavourId} onChange={set('flavourId')}>
-              <option value="">No flavour</option>
-              {flavours.map((f) => <option key={f._id} value={f._id}>{f.name}{f.extraPrice > 0 ? ` (+${money(f.extraPrice)})` : ''}</option>)}
+              <option value="">{t('noFlavour')}</option>
+              {flavours.map((f) => <option key={f._id} value={f._id}>{tr(f)}{f.extraPrice > 0 ? ` (+${money(f.extraPrice)})` : ''}</option>)}
             </select>
           </label>
         )}
-        <label>Size
+        <label>{t('size')}
           <select value={chosen?.name || ''} onChange={set('size')}>
-            {sizes.map((s) => <option key={s.name} value={s.name}>{s.name} · {money(s.price)}</option>)}
+            {sizes.map((s) => <option key={s.name} value={s.name}>{tr(s)} · {money(s.price)}</option>)}
           </select>
         </label>
-        <label>Milk
+        <label>{t('milk')}
           <select value={form.milk} onChange={set('milk')}>
-            <option value="whole">Whole</option><option value="oat">Oat</option><option value="almond">Almond</option><option value="none">No milk</option>
+            <option value="whole">{t('whole')}</option><option value="oat">{t('oat')}</option><option value="almond">{t('almond')}</option><option value="none">{t('none')}</option>
           </select>
         </label>
-        <label>Sweetness: {form.sweetness}/5
+        <label>{t('sweetness')}: {form.sweetness}/5
           <input type="range" min="0" max="5" value={form.sweetness} onChange={set('sweetness')} />
         </label>
-        <label>Notes<textarea rows="3" value={form.notes} onChange={set('notes')} placeholder="Extra shot, less ice…" /></label>
+        <label>{t('notes')}<textarea rows="3" value={form.notes} onChange={set('notes')} placeholder={t('notesPh')} /></label>
         {error && <p className="form-error">{error}</p>}
-        <button className="btn" type="submit" disabled={busy || !product}>{busy ? 'Placing…' : `Place order · ${money(total)}`}</button>
+        <button className="btn" type="submit" disabled={busy || !product}>{busy ? t('placing') : `${t('placeOrder')} · ${money(total)}`}</button>
       </form>
     </section>
   );

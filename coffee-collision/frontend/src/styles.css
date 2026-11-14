@@ -195,3 +195,36 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .card.fresh { animation: none; }
 }
 .sizes-line { font-size: 11px !important; letter-spacing: 0.08em; text-transform: uppercase; color: var(--caramel); opacity: 1 !important; }
+
+/* ---------- menu page: sections + compact cards (items without a photo yet) ---------- */
+.menu-section { margin-bottom: 56px; }
+.menu-section-title { font-family: var(--serif); font-size: clamp(26px, 3.4vw, 40px); font-weight: 900; margin: 8px 0 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(42, 28, 22, 0.2); }
+.page.light .cards { max-width: none; margin: 0; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.card.no-img { justify-content: space-between; }
+.card.no-img .card-body { padding: 20px 18px; gap: 10px; height: 100%; align-content: space-between; }
+.card.no-img .card-foot { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }
+.see-all { text-align: center; margin-top: 44px; }
+.see-all .btn { justify-self: center; }
+.marquee i { font-style: normal; }
+.lang-btn { font-family: 'Cairo', var(--sans); letter-spacing: 0; text-transform: none; font-size: 13px; padding: 4px 14px; }
+
+/* ---------- Arabic (right-to-left) ---------- */
+html[lang='ar'] { --serif: 'Cairo', 'Playfair Display', serif; --sans: 'Cairo', 'Inter', system-ui, sans-serif; }
+/* letter-spacing and uppercase break Arabic letter joining, so switch them off */
+html[lang='ar'] *, html[lang='ar'] *::before, html[lang='ar'] *::after { letter-spacing: 0 !important; text-transform: none !important; }
+html[lang='ar'] body { line-height: 1.7; }
+html[lang='ar'] .hero-title { font-family: 'Playfair Display', Georgia, serif; text-transform: uppercase !important; letter-spacing: 0.01em !important; }  /* brand name stays in Latin */
+html[lang='ar'] .hero-title span { direction: ltr; }
+html[lang='ar'] .card h3 { font-size: 21px; }
+[dir='rtl'] .marquee { direction: ltr; }
+[dir='rtl'] .hero-copy { left: auto; right: 4vw; }
+[dir='rtl'] .hero-loading { right: auto; left: 4vw; }
+[dir='rtl'] .badge-new { left: auto; right: 12px; }
+[dir='rtl'] .badge-cat { right: auto; left: 12px; }
+[dir='rtl'] .scroll-progress span { transform-origin: right; }
+[dir='rtl'] .list .right { text-align: left; }
+[dir='rtl'] .search-form input { text-align: right; }
+@media (max-width: 780px) {
+  [dir='rtl'] .hero-copy { left: 5vw; right: 5vw; }
+  .lang-btn { padding: 3px 11px; }
+}

@@ -5,6 +5,7 @@ const Flavour = require('../models/Flavour');
 const slugify = require('../utils/slugify');
 const log = require('../utils/activity');
 const { parseMenu } = require('../utils/menuParser');
+const { loadMenu } = require('../utils/loadMenu');
 const { protect, adminOnly } = require('../middleware/auth');
 
 const PALETTE = ['#b98a64', '#e8d9b5', '#8a5a3c', '#5a3825', '#c97b84', '#7a9e7e', '#d4a23a', '#6b8fb3'];
@@ -70,6 +71,15 @@ router.post('/import', protect, adminOnly, async (req, res) => {
 
     log(req.user, 'import', 'product', 'Menu import', `${result.created} added, ${result.updated} updated, ${result.skipped} skipped`);
     res.json({ ...result, warnings: parsed.warnings });
+  } catch (e) { res.status(400).json({ message: e.message }); }
+});
+
+// one click: add the complete bilingual (English + Arabic) Evara menu
+router.post('/load-full', protect, adminOnly, async (req, res) => {
+  try {
+    const r = await loadMenu({ overwrite: !!req.body?.overwrite, hideDemo: !!req.body?.hideDemo });
+    log(req.user, 'import', 'product', 'Full menu', `${r.created} added, ${r.updated} updated, ${r.kept} already there`);
+    res.json(r);
   } catch (e) { res.status(400).json({ message: e.message }); }
 });
 

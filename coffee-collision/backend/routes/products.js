@@ -6,17 +6,25 @@ const slugify = require('../utils/slugify');
 const log = require('../utils/activity');
 const { protect, adminOnly } = require('../middleware/auth');
 
-const populate = (q) => q.populate('category', 'name slug').populate('flavours', 'name color extraPrice available');
+const populate = (q) => q.populate('category', 'name nameAr slug').populate('flavours', 'name nameAr color extraPrice available');
 const isId = (v) => mongoose.Types.ObjectId.isValid(v);
+
+// Arabic for the standard size names, so a size added in the admin panel is translated too
+const SIZE_AR = { small: 'صغير', medium: 'وسط', large: 'كبير', big: 'كبير', regular: 'عادي', box: 'بوكس' };
 
 // body -> clean update fields
 function fields(b) {
   const f = {};
   if (b.name !== undefined) f.name = String(b.name).trim();
+  if (b.nameAr !== undefined) f.nameAr = String(b.nameAr).trim();
   if (b.description !== undefined) f.description = b.description;
+  if (b.descriptionAr !== undefined) f.descriptionAr = b.descriptionAr;
   if (Array.isArray(b.sizes)) {
     f.sizes = b.sizes
-      .map((s) => ({ name: String(s.name || '').trim(), price: Number(s.price) }))
+      .map((s) => {
+        const name = String(s.name || '').trim();
+        return { name, nameAr: String(s.nameAr || '').trim() || SIZE_AR[name.toLowerCase()] || '', price: Number(s.price) };
+      })
       .filter((s) => s.name && s.price >= 0);
   }
   if (f.sizes && f.sizes.length) f.price = Math.min(...f.sizes.map((s) => s.price));   // starting price comes from the sizes
@@ -74,7 +82,7 @@ router.post('/', protect, adminOnly, async (req, res) => {
     const _id = new mongoose.Types.ObjectId();
     applyImage(f, req.body, _id);
     const p = await Product.create({ ...f, _id, slug });
-    log(req.user, 'created', 'product', p.name, `$${p.price.toFixed(2)}`);
+    log(req.user, 'created', 'product', p.name, `${p.price} SAR`);
     res.status(201).json(await populate(Product.findById(p._id)));
   } catch (e) { res.status(400).json({ message: e.message }); }
 });

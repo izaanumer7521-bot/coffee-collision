@@ -7,7 +7,7 @@ function FlavourForm({ flavour, onSaved, onClose }) {
   const { token } = useAuth();
   const toast = useToast();
   const [f, setF] = useState({
-    name: flavour?.name || '', description: flavour?.description || '',
+    name: flavour?.name || '', nameAr: flavour?.nameAr || '', description: flavour?.description || '',
     extraPrice: flavour?.extraPrice ?? 0, color: flavour?.color || '#b98a64', available: flavour ? flavour.available : true,
   });
   const [busy, setBusy] = useState(false);
@@ -25,8 +25,9 @@ function FlavourForm({ flavour, onSaved, onClose }) {
     <Modal title={flavour ? 'Edit flavour' : 'New flavour'} onClose={onClose}>
       <form className="a-form" onSubmit={submit}>
         <label className="a-field"><span>Name</span><input className="a-input" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} placeholder="e.g. Salted caramel" required autoFocus /></label>
+        <label className="a-field"><span>Arabic name (الاسم بالعربية)</span><input className="a-input" dir="rtl" lang="ar" value={f.nameAr} onChange={(e) => setF({ ...f, nameAr: e.target.value })} /></label>
         <div className="a-two">
-          <label className="a-field"><span>Extra price ($)</span><input className="a-input" type="number" step="0.01" min="0" value={f.extraPrice} onChange={(e) => setF({ ...f, extraPrice: e.target.value })} /></label>
+          <label className="a-field"><span>Extra price (SAR)</span><input className="a-input" type="number" step="0.01" min="0" value={f.extraPrice} onChange={(e) => setF({ ...f, extraPrice: e.target.value })} /></label>
           <label className="a-field"><span>Colour</span><input className="a-input color" type="color" value={f.color} onChange={(e) => setF({ ...f, color: e.target.value })} /></label>
         </div>
         <label className="a-field"><span>Description (optional)</span><input className="a-input" value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></label>

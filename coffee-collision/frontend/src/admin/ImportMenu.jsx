@@ -35,6 +35,7 @@ export default function ImportMenu() {
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const [done, setDone] = useState(null);
+  const [full, setFull] = useState(null);
 
   const run = async () => {
     setBusy('preview'); setError(''); setDone(null);
@@ -50,6 +51,12 @@ export default function ImportMenu() {
     } catch (e) { setError(e.message); }
     setBusy('');
   };
+  const loadFull = async () => {
+    setBusy('full'); setError(''); setFull(null);
+    try { setFull(await api('/menu/load-full', { method: 'POST', token, body: {} })); toast('Full menu loaded'); }
+    catch (e) { setError(e.message); }
+    setBusy('');
+  };
   const onFile = async (e) => {
     const f = e.target.files?.[0];
     e.target.value = '';
@@ -60,6 +67,21 @@ export default function ImportMenu() {
   return (
     <div className="a-stack">
       <PageHead title="Import menu" sub="Type or paste your whole menu once. Categories, flavours, sizes and prices are created for you." />
+
+      <Card title="Evara full menu (English + Arabic)" sub="Adds every category and drink from the printed menu with Arabic names and SAR prices. Safe to press again: nothing is duplicated, and your pictures and edits are kept.">
+        {error && busy === '' && !text && <p className="a-error">{error}</p>}
+        <div className="a-actions">
+          <button className="a-btn" disabled={busy === 'full'} onClick={loadFull}>{busy === 'full' ? 'Loading…' : 'Load the full menu'}</button>
+        </div>
+        {full && (
+          <div className="a-result">
+            <span><b>{full.created}</b> items added</span>
+            <span><b>{full.kept}</b> already there</span>
+            <span><b>{full.categories}</b> new categories</span>
+            {full.noPrice?.length > 0 && <span>No price on the printed menu: <b>{full.noPrice.join(', ')}</b>. Set their price in Products.</span>}
+          </div>
+        )}
+      </Card>
 
       <div className="a-grid-2 even">
         <Card title="Your menu" action={

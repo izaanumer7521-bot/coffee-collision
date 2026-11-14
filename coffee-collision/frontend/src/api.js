@@ -50,4 +50,11 @@ export function timeAgo(date) {
   const d = Math.round(h / 24); if (d < 7) return `${d} d ago`;
   return new Date(date).toLocaleDateString();
 }
-export const money = (n) => `$${Number(n || 0).toFixed(2)}`;
+// Prices are in Saudi riyals. Whole numbers are shown without decimals (12, not 12.00).
+let moneyLang = 'en';
+export const setMoneyLang = (l) => { moneyLang = l; };
+export const money = (n) => {
+  const v = Number(n || 0);
+  const txt = Number.isInteger(v) ? String(v) : v.toFixed(2);
+  return moneyLang === 'ar' ? `${txt} ر.س` : `${txt} SAR`;
+};

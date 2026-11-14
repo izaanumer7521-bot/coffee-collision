@@ -21,6 +21,7 @@ import Messages from './admin/Messages.jsx';
 import Settings from './admin/Settings.jsx';
 import { ScrollProgress } from './hooks/useReveal.jsx';
 import { useAuth } from './context/AuthContext.jsx';
+import { useLang } from './i18n/LangContext.jsx';
 
 function ScrollTop() {
   const { pathname } = useLocation();
@@ -30,7 +31,8 @@ function ScrollTop() {
 
 function Private({ children, admin }) {
   const { user, ready } = useAuth();
-  if (!ready) return <p className="page-note">Loading…</p>;
+  const { t } = useLang();
+  if (!ready) return <p className="page-note">{t('loadingPage')}</p>;
   if (!user) return <Navigate to="/login" replace />;
   if (admin && user.role !== 'admin') return <Navigate to="/" replace />;
   return children;
@@ -38,6 +40,7 @@ function Private({ children, admin }) {
 
 export default function App() {
   const { pathname } = useLocation();
+  const { t } = useLang();
   const inAdmin = pathname.startsWith('/admin');
   return (
     <>
@@ -64,7 +67,7 @@ export default function App() {
             <Route path="messages" element={<Messages />} />
             <Route path="settings" element={<Settings />} />
           </Route>
-          <Route path="*" element={<p className="page-note">Page not found.</p>} />
+          <Route path="*" element={<p className="page-note">{t('notFound')}</p>} />
         </Routes>
       </main>
       {!inAdmin && <Footer />}

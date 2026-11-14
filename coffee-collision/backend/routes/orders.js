@@ -12,6 +12,8 @@ router.post('/', protect, async (req, res) => {
     const product = await Product.findById(productId);
     if (!product || !product.available) return res.status(404).json({ message: 'That drink is not available.' });
 
+    if (!(product.price > 0)) return res.status(400).json({ message: 'This item has no price yet and cannot be ordered online.' });
+
     // size: match by name (case-insensitive); default to the middle size
     const options = sizeOptions(product);
     const chosen = options.find((s) => s.name.toLowerCase() === String(size || '').toLowerCase()) || options[Math.floor((options.length - 1) / 2)];
@@ -28,7 +30,7 @@ router.post('/', protect, async (req, res) => {
       flavour: flavour ? flavour.name : '', flavourPrice, size: chosen.name, sizePrice: chosen.price,
       milk, sweetness, notes, total,
     });
-    log(req.user, 'created', 'order', product.name, `$${total.toFixed(2)} · ${chosen.name}${flavour ? ` · ${flavour.name}` : ''}`);
+    log(req.user, 'created', 'order', product.name, `${total} SAR · ${chosen.name}${flavour ? ` · ${flavour.name}` : ''}`);
     res.status(201).json(order);
   } catch (e) { res.status(400).json({ message: e.message }); }
 });

@@ -12,11 +12,11 @@ router.get('/', async (req, res) => {
 
 router.post('/', protect, adminOnly, async (req, res) => {
   try {
-    const { name, description = '', extraPrice = 0, color = '#b98a64', available = true } = req.body;
+    const { name, nameAr = '', description = '', extraPrice = 0, color = '#b98a64', available = true } = req.body;
     if (!name || !name.trim()) return res.status(400).json({ message: 'Flavour name is required.' });
     const slug = slugify(name);
     if (await Flavour.findOne({ slug })) return res.status(409).json({ message: 'That flavour already exists.' });
-    const f = await Flavour.create({ name: name.trim(), slug, description, extraPrice: Number(extraPrice) || 0, color, available });
+    const f = await Flavour.create({ name: name.trim(), nameAr: String(nameAr).trim(), slug, description, extraPrice: Number(extraPrice) || 0, color, available });
     log(req.user, 'created', 'flavour', f.name);
     res.status(201).json(f);
   } catch (e) { res.status(400).json({ message: e.message }); }
